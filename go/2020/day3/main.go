@@ -7,19 +7,29 @@ import (
 	"github.com/aarongable/adventofcode/2020/lib"
 )
 
-func part1(m [][]bool) int {
+func countTrees(m [][]bool, slopeX int, slopeY int) int {
 	res := 0
 	width := len(m[0])
-	for i, row := range m {
-		if row[(i*3)%width] {
+	for x, y := 0, 0; y < len(m); x, y = x+slopeX, y+slopeY {
+		if m[y][x%width] {
 			res = res + 1
 		}
 	}
 	return res
 }
 
+func part1(m [][]bool) int {
+	return countTrees(m, 3, 1)
+}
+
 func part2(m [][]bool) int {
-	return 0
+	a := countTrees(m, 1, 1)
+	b := countTrees(m, 3, 1)
+	c := countTrees(m, 5, 1)
+	d := countTrees(m, 7, 1)
+	e := countTrees(m, 1, 2)
+	t := a * b * c * d * e
+	return t
 }
 
 func main() {
