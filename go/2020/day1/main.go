@@ -8,8 +8,39 @@ import (
 	"strconv"
 )
 
+func part1(nums []int) int {
+	l := len(nums)
+	for i, x := range nums[0 : l-1] {
+		for _, y := range nums[i:l] {
+			if x+y == 2020 {
+				return x * y
+			}
+		}
+	}
+	return 0
+}
+
+func part2(nums []int) int {
+	l := len(nums)
+	for i, x := range nums[0 : l-2] {
+		for j, y := range nums[i : l-1] {
+			for _, z := range nums[j:l] {
+				if x+y+z == 2020 {
+					return x * y * z
+				}
+			}
+		}
+	}
+	return 0
+}
+
 func main() {
+	part := flag.Int("part", 1, "Solve part one or part two of the problem")
 	flag.Parse()
+	if *part < 1 || *part > 2 {
+		fmt.Println("Please select part 1 or part 2")
+		os.Exit(1)
+	}
 	if len(flag.Args()) != 1 {
 		fmt.Println("Must give a path to a file containing input")
 		os.Exit(1)
@@ -30,12 +61,9 @@ func main() {
 		}
 		nums = append(nums, i)
 	}
-	for i, x := range nums[0 : len(nums)-1] {
-		for _, y := range nums[i:len(nums)] {
-			if x+y == 2020 {
-				fmt.Printf("%d * %d = %d\n", x, y, x*y)
-				os.Exit(0)
-			}
-		}
+	if *part == 1 {
+		fmt.Println(part1(nums))
+	} else {
+		fmt.Println(part2(nums))
 	}
 }
