@@ -1,11 +1,11 @@
 package main
 
 import (
-	"bufio"
-	"flag"
 	"fmt"
 	"os"
 	"strconv"
+
+	"github.com/aarongable/adventofcode/2020/lib"
 )
 
 func part1(nums []int) int {
@@ -35,23 +35,7 @@ func part2(nums []int) int {
 }
 
 func main() {
-	part := flag.Int("part", 1, "Solve part one or part two of the problem")
-	flag.Parse()
-	if *part < 1 || *part > 2 {
-		fmt.Println("Please select part 1 or part 2")
-		os.Exit(1)
-	}
-	if len(flag.Args()) != 1 {
-		fmt.Println("Must give a path to a file containing input")
-		os.Exit(1)
-	}
-	filename := flag.Args()[0]
-	file, err := os.Open(filename)
-	if err != nil {
-		fmt.Println("Unable to open file")
-		os.Exit(1)
-	}
-	scanner := bufio.NewScanner(file)
+	part, scanner := lib.Boilerplate()
 	nums := make([]int, 0)
 	for scanner.Scan() {
 		i, err := strconv.Atoi(scanner.Text())
@@ -61,7 +45,7 @@ func main() {
 		}
 		nums = append(nums, i)
 	}
-	if *part == 1 {
+	if part == 1 {
 		fmt.Println(part1(nums))
 	} else {
 		fmt.Println(part2(nums))
