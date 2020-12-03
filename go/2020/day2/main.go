@@ -50,7 +50,15 @@ func part1(lines []line) int {
 }
 
 func part2(lines []line) int {
-	return 0
+	res := 0
+	for _, l := range lines {
+		first := string(l.password[l.rule.lower]) == l.rule.char
+		second := string(l.password[l.rule.upper]) == l.rule.char
+		if first != second {
+			res = res + 1
+		}
+	}
+	return res
 }
 
 func main() {
