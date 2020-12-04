@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -15,21 +16,25 @@ type policy struct {
 	upper int
 }
 
-func parsePolicy(p string) (*policy, error) {
-	s := strings.Split(p, " ")
-	limits := strings.Split(s[0], "-")
-	lower, err := strconv.Atoi(limits[0])
+var policyRegexp = regexp.MustCompile(`^(\d+)-(\d+) (\w): (\w+)$`)
+
+func parseLine(l string) (*line, error) {
+	m := policyRegexp.FindStringSubmatch(l)
+	lower, err := strconv.Atoi(m[1])
 	if err != nil {
 		return nil, err
 	}
-	upper, err := strconv.Atoi(limits[1])
+	upper, err := strconv.Atoi(m[2])
 	if err != nil {
 		return nil, err
 	}
-	return &policy{
-		char:  s[1],
-		lower: lower,
-		upper: upper,
+	return &line{
+		rule: policy{
+			char:  m[3],
+			lower: lower,
+			upper: upper,
+		},
+		password: m[4],
 	}, nil
 }
 
@@ -52,8 +57,8 @@ func part1(lines []line) int {
 func part2(lines []line) int {
 	res := 0
 	for _, l := range lines {
-		first := string(l.password[l.rule.lower]) == l.rule.char
-		second := string(l.password[l.rule.upper]) == l.rule.char
+		first := string(l.password[l.rule.lower-1]) == l.rule.char
+		second := string(l.password[l.rule.upper-1]) == l.rule.char
 		if first != second {
 			res = res + 1
 		}
@@ -65,13 +70,12 @@ func main() {
 	part, scanner := lib.Boilerplate()
 	lines := make([]line, 0)
 	for scanner.Scan() {
-		split := strings.Split(scanner.Text(), ":")
-		p, err := parsePolicy(split[0])
+		l, err := parseLine(scanner.Text())
 		if err != nil {
 			fmt.Printf("Failed to parse input line: %s\n", scanner.Text())
 			os.Exit(1)
 		}
-		lines = append(lines, line{rule: *p, password: split[1]})
+		lines = append(lines, *l)
 	}
 	if part == 1 {
 		fmt.Println(part1(lines))
